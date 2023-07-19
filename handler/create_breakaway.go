@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/spknetwork/ecency_starting-point_be/helper"
 )
 
 type CommunityStruct struct {
   HiveId string `json:"hive_id"`
   Tags string `json:"tags"`
   ServerIP string `json:"server_ip"`
+  ServerUsername string `json:"server_username"`
   Password string `json:"server_password"`
 }
 
@@ -25,9 +27,27 @@ func CreateBreakaway(c *fiber.Ctx) error {
 		return err
     }
 
-	c.JSON(fiber.Map{
-		"message": fmt.Sprintf("created community with id %s", payload.HiveId),
-	})
+	conn, err := helper.Connect(fmt.Sprintf("%s:22", payload.ServerIP), payload.ServerUsername, payload.Password)
+	if err != nil {
+		c.JSON(fiber.Map{
+			"error": "Can't connect to given server",
+		})
+		c.Status(500)
+		return err
+	}
 
+	output, err := conn.SendCommands("mkdir something_test")
+	if err != nil {
+		c.JSON(fiber.Map{
+			"error": "Can't send command to given server",
+		})
+		c.Status(500)
+		return err
+	}
+
+	c.JSON(fiber.Map{
+		"message": "successfully connnected to server and created directory named something_test",
+		"output": output,
+	})
 	return nil;
 }
