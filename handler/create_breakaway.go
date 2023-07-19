@@ -36,8 +36,7 @@ func CreateBreakaway(c *fiber.Ctx) error {
 		return err
 	}
 
-	output, err := conn.SendCommands("mkdir something_test")
-	if err != nil {
+	if _, err := conn.SendCommands("sudo apt-get install docker"); err != nil {
 		c.JSON(fiber.Map{
 			"error": "Can't send command to given server",
 		})
@@ -45,9 +44,5 @@ func CreateBreakaway(c *fiber.Ctx) error {
 		return err
 	}
 
-	c.JSON(fiber.Map{
-		"message": "successfully connnected to server and created directory named something_test",
-		"output": output,
-	})
 	return nil;
 }
