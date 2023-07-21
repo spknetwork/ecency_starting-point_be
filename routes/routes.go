@@ -11,5 +11,5 @@ func SetupRoutes(app *fiber.App) {
 			"message": "Welcome to the break-away community hosting platform API",
 		})
     })
-	app.Post("/api/create-break", handler.CreateBreakaway)
+	app.Post("/api/create-community", handler.CreateBreakaway)
 }

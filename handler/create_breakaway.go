@@ -36,13 +36,12 @@ func CreateBreakaway(c *fiber.Ctx) error {
 		return err
 	}
 
-	if _, err := conn.SendCommands("sudo apt-get install docker"); err != nil {
+	if _, err := conn.SendCommands("sudo -i"); err != nil {
 		c.JSON(fiber.Map{
-			"error": "Can't send command to given server",
+			"error": "Can't get into sudo",
 		})
 		c.Status(500)
 		return err
 	}
-
 	return nil;
 }
