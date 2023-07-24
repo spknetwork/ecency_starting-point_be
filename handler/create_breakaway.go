@@ -13,6 +13,7 @@ type CommunityStruct struct {
   ServerIP string `json:"server_ip"`
   ServerUsername string `json:"server_username"`
   Password string `json:"server_password"`
+  Link string `json:"server_links"`
 }
 
 
@@ -43,5 +44,23 @@ func CreateBreakaway(c *fiber.Ctx) error {
 		c.Status(500)
 		return err
 	}
+
+
+	if _, err := conn.SendCommands(fmt.Sprintf("npx @spknetwork/commmunity-create@latest %s %s %s", payload.HiveId, payload.Tags, payload.Link)); err != nil {
+		c.JSON(fiber.Map{
+			"error": "Can't setup UI",
+		})
+		c.Status(500)
+		return err
+	}
+
+	if _, err := conn.SendCommands(fmt.Sprintf("certbot --nginx -d %s", payload.Link)); err != nil {
+		c.JSON(fiber.Map{
+			"error": "Can't setup certification for website",
+		})
+		c.Status(500)
+		return err
+	}
+
 	return nil;
 }
