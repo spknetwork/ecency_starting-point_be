@@ -22,7 +22,7 @@ func CreateBreakaway(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&payload); err != nil {
 		c.JSON(fiber.Map{
-			"error": "Can't parse your given paylaod",
+			"error": "WRONG_PAYLOAD",
 		})
 		c.Status(400)
 		return err
@@ -30,36 +30,32 @@ func CreateBreakaway(c *fiber.Ctx) error {
 
 	conn, err := helper.Connect(fmt.Sprintf("%s:22", payload.ServerIP), payload.ServerUsername, payload.Password)
 	if err != nil {
-		c.JSON(fiber.Map{
-			"error": "Can't connect to given server",
-		})
 		c.Status(500)
-		return err
+		return c.JSON(fiber.Map{
+			"error": "NO_SERVER",
+		})
 	}
 
 	if _, err := conn.SendCommands("sudo -i"); err != nil {
-		c.JSON(fiber.Map{
-			"error": "Can't get into sudo",
-		})
 		c.Status(500)
-		return err
+		return c.JSON(fiber.Map{
+			"error": "NO_ROOT_ACCESS",
+		})
 	}
 
 
 	if _, err := conn.SendCommands(fmt.Sprintf("npx @spknetwork/commmunity-create@latest %s %s %s", payload.HiveId, payload.Tags, payload.Link)); err != nil {
-		c.JSON(fiber.Map{
-			"error": "Can't setup UI",
-		})
 		c.Status(500)
-		return err
+		return c.JSON(fiber.Map{
+			"error": "NO_CLI",
+		})
 	}
 
 	if _, err := conn.SendCommands(fmt.Sprintf("certbot --nginx -d %s", payload.Link)); err != nil {
-		c.JSON(fiber.Map{
-			"error": "Can't setup certification for website",
-		})
 		c.Status(500)
-		return err
+		return c.JSON(fiber.Map{
+			"error": "NO_CERTIFICATION",
+		})
 	}
 
 	return nil;
