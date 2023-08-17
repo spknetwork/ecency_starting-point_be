@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  app:
+    image: pspc/starting-point-be
+    restart: always
+    ports: 
+      - "80:8000"
